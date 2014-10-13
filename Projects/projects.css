@@ -1,0 +1,124 @@
+@charset "utf-8";
+@import url('../fapri_site.css');
+/* CSS Document */
+
+div.budget {
+	border: 2px solid #000;
+	width: 730px;
+	background-color:white;
+	padding:10px;
+	text-align:left;
+}
+
+div.budget h1 {
+	font-weight:bold;
+	font-size:18px;
+}
+
+div.budget table {
+	padding:0px;
+	border:0px;
+	border-collapse:collapse;
+}
+
+div.budget table tr td {
+	font-size:14px;
+	padding:0px;
+	border:0px;
+	margin:0px;
+	vertical-align:bottom;
+}
+
+td.labels, h2 {
+	font-weight:bolder;
+}
+
+h1 {
+	font-size:20px;
+	margin:0px;
+	padding:0px;
+}
+
+h2 {
+	font-size:16px;
+	margin:0px;
+	padding:0px;
+}
+
+tr.year {
+	font-style:italic;
+}
+
+td.subvar, input.subtext, input.subtextfoc {
+	color:#999;
+	font-style:italic;
+}
+
+input.text, input.notext, input.subtext, 
+input.textfoc, input.notextfoc, input.subtextfoc{
+	width:80px;
+	background-color:white;
+	border: 1px solid #D2E1EC;
+	padding:0px;
+	height:26px;
+	text-align:right;
+}
+
+input.text:focus, input.notext:focus, input.subtext:focus,
+input.textfoc, input.notextfoc, input.subtextfoc {
+	border: 1px solid #66cccc;
+}
+
+input.text:focus, input.textfoc {
+	background-color:white;
+}
+
+input.notext, input.notextfoc {
+	background-color:#E1AFAA;
+}
+
+table.result, table.result th, table.result td {
+	border-width: 0px;
+	border-spacing: 0px;
+	border-style: solid;
+	border-color: black;
+	background-color: white;
+	font-size:14px;
+}
+
+table.result {
+	border-collapse: separate;
+}
+
+table.result th, table.result td {
+	-moz-border-radius: 0px 0px 0px 0px;
+	border-style:none;
+	/*padding:2px;*/
+	padding-left:2px;
+	padding-right:2px;
+	padding-bottom:0px;
+	padding-top:0px;
+}
+
+.header, .print {
+	margin:0px;
+	padding:0px;
+	border:0px;
+	background-color:white;
+}
+
+.print {
+	height:100%;
+	width:100%;
+}
+
+.backbutton {
+	float:right; 
+	margin-right:10px; 
+	padding:2px;	
+}
+
+.choices {
+	padding:0px; 
+	margin:0px;	
+}

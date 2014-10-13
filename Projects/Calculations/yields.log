@@ -1,0 +1,187 @@
+1                                        The SAS System            14:13 Tuesday, August 7, 2012
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to THE CURATORS OF THE UNIV OF MISSOURI - T&R, Site 70084888.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+WARNING: Your system is scheduled to expire on August 29, 2012, which is 22 days from now. The 
+         SAS System will no longer function on or after that date. Please contact your SAS 
+         Installation Representative to obtain your updated SAS Installation Data (SID) file, 
+         which includes SETINIT information.
+To locate the name of your SAS Installation Representative go to 
+http://support.sas.com/repfinder and provide your site number 70084888 and company name as THE 
+CURATORS OF THE UNIV OF MISSOURI - T&R. On the SAS REP list provided, locate the REP for 
+operating system Windows.
+NOTE: SAS initialization used:
+      real time           0.10 seconds
+      cpu time            0.06 seconds
+      
+1          dm 'log;clear;output;clear;';
+2          *temp is all data, wheat is wheat by type;
+3          
+4          ****************************************************;
+5          *wheat;
+6          ****************************************************;
+7          *sum wheat by categories;
+WARNING: The Base SAS Software product with which SQL is associated will be expiring soon, and 
+         is currently in warning mode to indicate this upcoming expiration. Please run PROC 
+         SETINIT to obtain more information on your warning period.
+8          proc sql;
+8        !           create table wheat0 as select Year, State, County, StFips, CoFips,
+8        ! District, Sum(Planted_All_Purposes) as Planted_All_Purposes, Sum(Harvested) as
+8        ! Harvested,
+9          	Sum(Production) as Production, FIPS
+10         	from wheat
+11         	where (Commodity = 'Wheat Durum' or Commodity = 'Wheat Other Spring' or Commodity =
+11       ! 'Wheat Winter All')
+12         	Group By FIPS, Year, State, County, StFips, CoFips, District;
+ERROR: File WORK.WHEAT.DATA does not exist.
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+13         run;
+NOTE: PROC SQL statements are executed immediately; The RUN statement has no effect.
+14         
+15         *add some labels for the wheat by categories;
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+2                                        The SAS System            14:13 Tuesday, August 7, 2012
+
+
+
+16         data wheat0; set wheat0;
+ERROR: File WORK.WHEAT0.DATA does not exist.
+17         	Commodity = 'Wheat All';
+18         	Planted_unit = 'acres';
+19         	Harvested_unit = 'acres';
+20         	Yield_unit = 'bushel';
+21         	Production_unit = 'bushel';
+22         	Yield=Production/Harvested;
+23         	CommCode=10119999;
+24         run;
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: SAS set option OBS=0 and will continue to check statements. 
+      This might cause NOTE: No observations in data set.
+WARNING: The data set WORK.WHEAT0 may be incomplete.  When this step was stopped there were 0 
+         observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+25         
+26         *add the all wheat to the wheat sum dataset;
+27         proc sort data=wheat0; by CommCode FIPS Year; run;
+ERROR: Variable FIPS not found.
+ERROR: Variable YEAR not found.
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+28         proc sort data=temp; by CommCode FIPS Year; run;
+ERROR: File WORK.TEMP.DATA does not exist.
+ERROR: No data set open to look up variables.
+ERROR: No data set open to look up variables.
+ERROR: No data set open to look up variables.
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+29         data temp0; merge temp wheat0; by CommCode FIPS Year;
+ERROR: File WORK.TEMP.DATA does not exist.
+30         run;
+
+3                                        The SAS System            14:13 Tuesday, August 7, 2012
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.TEMP0 may be incomplete.  When this step was stopped there were 0 
+         observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+31         
+32         ***************************************************;
+33         
+34         data temp1; set temp0;
+35         	if CoFips = 999 or CoFips = 888 then delete;
+36         run;
+
+NOTE: The data set WORK.TEMP1 has 0 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+37         
+38         proc sort data=temp1 out=temp2; by Fips CommCode Year; run;
+ERROR: Variable FIPS not found.
+ERROR: Variable YEAR not found.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.TEMP2 may be incomplete.  When this step was stopped there were 0 
+         observations and 0 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+39         
+
+
+40         proc transpose data=temp2 out=temp3;
+41         	id year;
+ERROR: Variable YEAR not found.
+42         	by Fips CommCode;
+ERROR: Variable FIPS not found.
+ERROR: Variable COMMCODE not found.
+43         	var Yield;
+ERROR: Variable YIELD not found.
+44         run;
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.TEMP3 may be incomplete.  When this step was stopped there were 0 
+         observations and 0 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+4                                        The SAS System            14:13 Tuesday, August 7, 2012
+
+45         
+
+
+46         data temp4; set temp3;
+47         	if max(of _1982-_2011) = . then delete;
+48         run;
+
+NOTE: The data set WORK.TEMP4 has 0 observations and 30 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Errors printed on pages 1,2,3.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.12 seconds
+      cpu time            0.09 seconds
+      

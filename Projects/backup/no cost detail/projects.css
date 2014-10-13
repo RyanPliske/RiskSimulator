@@ -1,0 +1,78 @@
+@charset "utf-8";
+@import url('../fapri_site.css');
+/* CSS Document */
+
+div.budget {
+	border: 2px solid #000;
+	width: 700px;
+	background-color:white;
+	padding:10px;
+}
+
+div.budget h1 {
+	font-weight:bold;
+	font-size:18px;
+}
+
+div.budget table {
+	padding:0px;
+	border:0px;
+	border-collapse:collapse;
+}
+
+div.budget table tr td {
+	font-size:14px;
+	padding:0px;
+	border:0px;
+	margin:0px;
+}
+
+td.labels, h2 {
+	font-weight:bolder;
+}
+
+h2 {
+	margin:0px;
+	padding:0px;
+	font-size:inherit;
+}
+
+tr.year {
+	font-style:italic;
+}
+
+input.text, input.notext {
+	width:80px;
+	background-color:white;
+	border: 1px solid #D2E1EC;
+	padding:0px;
+	height:22px;
+	text-align:right;
+}
+
+input.text:focus {
+	background-color:white;
+	border: 1px solid #66cccc;
+}
+
+input.notext {
+	background-color:#E1AFAA;
+}
+
+table.result, table.result th, table.result td {
+	border-width: 1px;
+	border-spacing: 0px;
+	border-style: solid;
+	border-color: black;
+	background-color: white;
+}
+
+table.result {
+	border-collapse: separate;
+}
+
+table.result th, table.result td {
+	-moz-border-radius: 0px 0px 0px 0px;
+	border-style:none;
+	padding:2px;
+}
