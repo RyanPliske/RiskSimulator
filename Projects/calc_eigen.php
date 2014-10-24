@@ -25,12 +25,12 @@ $oldMatrix = $matrix; //Save the initial matrix
 
 // Find nearest Decomposed Correlation Matrix
 $x=0;
-
+// The purpose of this loop is to Calculate Eigenvalues and Eigenvectors until eigenvalues are at least zero
 do{
 		$x++;
 		if($x!=1) // Skip calculating Eigen first time around because we just did that when we used : init()
 		{
-			// Calculate Eigenvalues and Eigenvectors until eigenvalues are at least zero
+			// Calculate Eigenvalues and Eigenvectors
 			$objEigen->Init($oldMatrix);
 		}
 		//Make sure all eigenvalues are at least 0
@@ -45,19 +45,17 @@ do{
 		{
 			for ($j=0; $j < count($objEigen->EigenValuesCol); $j++)
 			{
-				$diagonalized_Identity[$i][$j] = 0;
+				$diagonalized_Identity[$i][$j] = (float)0;
 				if ($i == $j)
-					$diagonalized_Identity[$i][$j] = $objEigen->EigenValues[$j];
+					$diagonalized_Identity[$i][$j] = $objEigen->EigenValuesCol[$j];
 			}
 		}
 
 		// CorrelationMatrix = EigenvectorMatrix * Identity Matrix with EigenValues as Diagonals * EigenvectorMatrix Transposed
-		$corrMatrix = $objEigen->matrix_multiplication( $objEigen->matrix_multiplication($objEigen->EigenVectors, $diagonalized_Identity) , $objEigen->Transposed_Eigen_Vector);
-		var_dump($corrMatrix);
-		// var_dump($objEigen->EigenVectors);
-		// var_dump($diagonalized_Identity);
-		// var_dump($objEigen->Transposed_Eigen_Vector);
-		// var_dump($corrMatrix);
+
+		$corrMatrix = $objEigen->matrix_multiplication($objEigen->EigenVectors, $diagonalized_Identity);
+		$corrMatrix = $objEigen->matrix_multiplication($corrMatrix, $objEigen->Transposed_Eigen_Vector);
+
 		// Set Diagonals to 1
 		for ($i = 0; $i < count($corrMatrix); $i++)
 		{
@@ -67,7 +65,7 @@ do{
 					$corrMatrix[$i][$j] = (float)1;
 			}
 		}
-		//var_dump($corrMatrix);
+		
 		// Subtract Matrices: $temp = $corrMatrix - $oldMatrix;
 		for ($i = 0; $i < count($corrMatrix); $i++)
 		{
@@ -76,15 +74,24 @@ do{
 					$temp[$i][$j] = $corrMatrix[$i][$j] - $oldMatrix[$i][$j];
 			}
 		}
-		//var_dump($temp);
+
 		$check = sqrt(abs(ColSumsOfSquares($temp) / ColSumsOfSquares($oldMatrix)));
-		//echo "</br>".$check;
-		//echo "</br>".pow(10,-20);
+
 		$oldMatrix = $corrMatrix;
 
-	} while($check < pow(10,-20));
-
-//var_dump($oldMatrix);
+	} 
+	while($check < pow(10,-20));
+	// Before we leave set non-diagonals back to original pos/neg it began with
+	for ($i = 0; $i < count($corrMatrix); $i++)
+	{
+		for ($j=0; $j < count($corrMatrix[0]); $j++)
+		{
+			if ($i != $j)
+				$corrMatrix[$i][$j] = $corrMatrix[$i][$j] * -1;
+		}
+	}
+	$oldMatrix = $corrMatrix;
+	var_dump($oldMatrix);
 
 //Destroy object
 $objEigen->__destruct();

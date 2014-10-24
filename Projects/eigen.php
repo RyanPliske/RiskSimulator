@@ -47,24 +47,14 @@ class Eigen
 			}
 		}
 		
-		// sort EigenVectors
-		$temp = $this->EigenVectors;
-		for ($i=0; $i < count($temp); $i++)
-		{
-			$this->EigenVectors[$i][0] = $temp[$i][1];
-			$this->EigenVectors[$i][1] = $temp[$i][0];
-		}
-		$this->Transposed_Eigen_Vector = $temp;
 		// Transpose EigenVectors
-		/*
 		for($j=0; $j < $this->n; $j++)
 		{
 			for($k=0; $k < $this->n; $k++)
 			{
-				$this->Transposed_Eigen_Vector[$j][$k] = $this->EigenVectors[$j+1][$k+1];
+				$this->Transposed_Eigen_Vector[$k][$j] = $this->EigenVectors[$j][$k];
 			}
 		}
-		*/
 	}
 	
 	/* Calculate the matrix with the diagonals as the EigenValues */

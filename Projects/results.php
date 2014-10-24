@@ -137,13 +137,13 @@ include('load_draws.php');
 <body>
 
 	<center>
-	<?php include('../header.php'); ?>
+	<?php //nclude('../header.php'); ?>
 	<p>
     <table width=800 border=0 cellspacing=0 cellpadding=0>
 	<tr>
-        <td width=8 valign="top" align="left"><img src="/images/spacers_curves/left_top_curve.gif"></td>
+        <td width=8 valign="top" align="left"><img src="../images/spacers_curves/left_top_curve.gif"></td>
         <td width=784 valign="top">&nbsp;</td>
-        <td width=8 valign="top" align="right"><img src="/images/spacers_curves/right_top_curve.gif"></td>
+        <td width=8 valign="top" align="right"><img src="../images/spacers_curves/right_top_curve.gif"></td>
 	</tr>
     <tr>
 	<td colspan="3">
@@ -179,9 +179,9 @@ include('load_draws.php');
 	<div id="output_eigen"><?php include('output_eigen.php'); ?></div>
     </td>
     <tr>
-        <td valign="bottom" align="left"><img src="/images/spacers_curves/left_bottom_curve.gif"></td>
+        <td valign="bottom" align="left"><img src="../images/spacers_curves/left_bottom_curve.gif"></td>
         <td>&nbsp;</td>
-        <td valign="bottom" align="right"><img src="/images/spacers_curves/right_bottom_curve.gif"></td>
+        <td valign="bottom" align="right"><img src="../images/spacers_curves/right_bottom_curve.gif"></td>
 	</tr>
 	</table>
     <p>
