@@ -68,12 +68,22 @@
 	//Set Query
 	$sql= 'SELECT * FROM tblStates';
 	//Execute Query, set Record Set equal to Execution so that you can find the End Of File later
-	$rs = $db->Execute($sql) or die('<br/><b><font color="red">Query to MS Access Failed: '.$db->ErrorMsg() );
+
+	//$rs = $db->Execute($sql) or die('<br/><b><font color="red">Query to MS Access Failed: '.$db->ErrorMsg() );
+	$rs = mysqli_query($db, $sql); 
+	if(!$rs){
+		die("query failed: " . mysqli_connect_error());
+	}
+	while($row = mysqli_fetch_array($rs)) {
+			echo "<option value='".$row[0]."'>".$row[1]."</option>\n\t";
+	}
+/*
 	do
 	{
 		echo "<option value='".$rs->fields[0]."'>".$rs->fields[1]."</option>\n\t";
 		$rs->MoveNext();
 	} while(!$rs->EOF); 
+	*/
 	//Close connection
 	$rs->Close();
 	include('ado_close.php');
