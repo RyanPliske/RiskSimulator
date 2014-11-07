@@ -30,7 +30,7 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$rsData = mysqli_query($conn, $strSQL);
 
 		if(!$rsData){
-			die("Query Failed: " . mysqli_connect_error());
+			die("Query Failed: " . $conn->connect_error());
 		}
 		/*for($j=$yStart; $j<=$yEnd; $j++)
 		{
@@ -57,11 +57,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 			}
 		}
 		
-		mysqli_close($conn);
+		//mysqli_close($conn);
 	}
 }
 
-/*
+
 
 //Historical Prices********************************************************************************************************************
 for($i=0;$i<=count($oCrop)-1;$i++)
@@ -69,15 +69,26 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 	if ($oCrop[$i]->Used == "true")
 	{
 		$strSQL = "SELECT * FROM tblStatePrices WHERE StFips='".substr($_POST["fips"],0,2)."' AND CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
-		for($j=-3+$yStart; $j<=-1+$yStart; $j++)
-		{
-			if (!$rsData->EOF && $rsData->fields($j)!=NULL )
-			{
-				$oCrop[$i]->HPrice[$j-$yStart+3] = $rsData->fields($j);
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
+		$rsData = mysqli_query($conn, $strSQL);
+
+		if(!$rsData){
+			die("Query Failed: " . $conn->connect_error());
+		}
+		if (mysqli_num_rows($rsData) > 0){
+				
+			$row = mysqli_fetch_assoc($rsData);
+
+			for($j=-3+$yStart; $j<=-1+$yStart; $j++){
+			//if (!$rsData->EOF && $rsData->fields($j)!=NULL )
+						print_r($oCrop);if ($row[$yStart] != NULL){
+					$oCrop[$i]->HPrice[$j-$yStart+3] = $rsData->fields($j);
+
+				}
 			}
 		}
-		$rsData->close();
+		//$rsData->close();
+		mysqli_close($conn);
 	}
 }
 
@@ -351,5 +362,5 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 	} 
 }
 
-*/
+
 ?>

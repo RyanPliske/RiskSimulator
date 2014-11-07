@@ -13,8 +13,13 @@
 	include('load_values.php');
 	
 	//Save the user input
+
 	$strSQL = "SELECT * FROM tblUsage";
-	$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+	//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+	$rsData = mysqli_query($db, $strSQL);
+	if(!$rsData){
+			die("Query Failed: " . mysqli_connect_error());
+		}
 	//Get last row of tblUsage
 	$numrows = 843 + $rsData->PO_RecordCount("tblUsage", $db);
 	//Set timezone
