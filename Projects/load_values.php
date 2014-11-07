@@ -5,25 +5,63 @@
 	File name: load_values.php
 	Pulls all the data from DB and saves them into variables
 	No output is done here
-*/
 
+	Fix input.php!!!!!!!!!1
+*/
+// The parent file is 
 //Yields*********************************************************************************************************************
+//Connecting to the database
+	$servername = "localhost";
+	$username = "root";
+	$password = "fapri";
+	$dbname = "movedb";
+
+	$conn = new mysqli($servername,$username, $password, $dbname);
+	if(!$conn){
+		die("Connection failed: " . $conn->connect_error);
+	}
+//There are 13 crops being loop through. Checking to see if the user selected an option. If an option is selected it pulls the data and displays it.
 for($i=0;$i<=count($oCrop)-1;$i++)
 {
 	if ($oCrop[$i]->Used == "true")
 	{
 		$strSQL = "SELECT * FROM tblCountyYields WHERE FIPS='".iif( $oCrop[$i]->Label != 'dairy', $_POST['fips'], substr($_POST['fips'],0,2).'000')."' AND CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
-		for($j=$yStart; $j<=$yEnd; $j++)
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
+		$rsData = mysqli_query($conn, $strSQL);
+
+		if(!$rsData){
+			die("Query Failed: " . mysqli_connect_error());
+		}
+		/*for($j=$yStart; $j<=$yEnd; $j++)
 		{
 			if (!$rsData->EOF && $rsData->fields($j)!=NULL )
 			{
 				$oCrop[$i]->Yield[$j-$yStart] = $rsData->fields($j);
 			}
+		}*/
+		
+		if (mysqli_num_rows($rsData) > 0)
+		{
+			// set the data returned from the database to $row
+			$row = mysqli_fetch_assoc($rsData);
+			// yStart is definied in input.php
+			for($j=$yStart; $j<$yEnd; $j++)
+			{
+				// Check to see if there is a variable for the specific year
+				if($row[$yStart] != NULL)
+				{
+					// If there is a value, then set the crops's Yield to it.
+					$oCrop[$i]->Yield[$j-$yStart] = $row[$yStart];
+					// echo $oCrop[$i]->Yield[$j-$yStart];
+				}
+			}
 		}
-		$rsData->close();
+		
+		mysqli_close($conn);
 	}
 }
+
+/*
 
 //Historical Prices********************************************************************************************************************
 for($i=0;$i<=count($oCrop)-1;$i++)
@@ -312,4 +350,6 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$rsAvg->Close();
 	} 
 }
+
+*/
 ?>
