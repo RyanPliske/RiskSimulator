@@ -81,14 +81,14 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 
 			for($j=-3+$yStart; $j<=-1+$yStart; $j++){
 			//if (!$rsData->EOF && $rsData->fields($j)!=NULL )
-						print_r($oCrop);if ($row[$yStart] != NULL){
+					if ($row[$yStart] != NULL){
 					$oCrop[$i]->HPrice[$j-$yStart+3] = $rsData->fields($j);
 
 				}
 			}
 		}
 		//$rsData->close();
-		mysqli_close($conn);
+		//mysqli_close($conn);
 	}
 }
 
@@ -103,20 +103,29 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		}
 		else
 			$strSQL = "SELECT * FROM tblStatePrices WHERE StFips='".substr($_POST["fips"],0,2)."' AND CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = mysqli_query($conn, $strSQL);
 
+		if(!$rsData){
+			die("Query Failed: " . $conn->connect_error());
+		}
+		if (mysqli_num_rows($rsData) > 0){
+				
+			$row = mysqli_fetch_assoc($rsData);
 
 		for($j=$yStart-3; $j<=$yEnd; $j++)
 		{
-			if (!$rsData->EOF && $rsData->fields($j)!=NULL )
-			{
+			//if (!$rsData->EOF && $rsData->fields($j)!=NULL )
+			if ($row[$yStart] != NULL){
+			
 				$oCrop[$i]->Price[$j-$yStart+3] = $rsData->fields($j);
 			}
 		}
-		$rsData->close();
+		//$rsData->close();
+		mysqli_close($conn);
+		}
 	}
 }
-
 //Other Revenues********************************************************************************************************************
 for($i=0;$i<=count($oCrop)-1;$i++)
 {
@@ -129,7 +138,12 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 			$strSQL = "SELECT * FROM tblOtherRev AS a INNER JOIN tblRegions AS b ON b.Region = a.Region ";
 			$strSQL .= "WHERE b.Fips='".$_POST['fips']."' ";
 			$strSQL .= "AND a.CommCode=".$oCrop[$i]->CommCode;
-			$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+			//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+			$rsData = mysqli_query($conn, $strSQL);
+
+			if(!$rsData){
+				die("Query Failed: " . $conn->connect_error());
+			}
 			$Region = $rsData->fields('Region');
 			if (!$Region)
 				$Region = 0;
@@ -139,7 +153,12 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 			$Region = 0;
 		//Regional Other Revenue
 		$strSQL = "SELECT * FROM tblOtherRev WHERE Region=".$Region." AND CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = mysqli_query($conn, $strSQL);
+
+		if(!$rsData){
+			die("Query Failed: " . $conn->connect_error());
+		}
 		for ($j=$yStart; $j<=$yEnd;$j++)
 		{
 			if (!$rsData->EOF && $rsData->fields($j)!=NULL )
