@@ -11,34 +11,40 @@
 // The parent file is 
 //Yields*********************************************************************************************************************
 //Connecting to the database
-	$servername = "localhost";
-	$username = "root";
-	$password = "fapri";
-	$dbname = "movedb";
+	///$servername = "localhost";
+	//$username = "root";
+	//$password = "fapri";
+	//$dbname = "movedb";
 
-	$conn = new mysqli($servername,$username, $password, $dbname);
-	if(!$conn){
-		die("Connection failed: " . $conn->connect_error);
+	/*The require once function is use to get the credentials for the database.  This will be changed if we start using a different Database. The current file used
+	is in dbconnect.php.  This is done because there are multiple places where it's necessary to present credentials for the database*/
+	require_once 'dbconnect.php';
+	// Connect to the database and all the varibles are from dbconnect.php
+	$info_db = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+	// Check for errors
+	if(!$info_db){
+		die("Connection failed: " . $info_db->connect_error);
 	}
-//There are 13 crops being loop through. Checking to see if the user selected an option. If an option is selected it pulls the data and displays it.
-for($i=0;$i<=count($oCrop)-1;$i++)
-{
-	if ($oCrop[$i]->Used == "true")
+	//There are 13 crops being loop through. Checking to see if the user selected an option. If an option is selected it pulls the data and displays it.
+	for($i=0;$i<=count($oCrop)-1;$i++)
 	{
-		$strSQL = "SELECT * FROM tblCountyYields WHERE FIPS='".iif( $oCrop[$i]->Label != 'dairy', $_POST['fips'], substr($_POST['fips'],0,2).'000')."' AND CommCode=".$oCrop[$i]->CommCode;
-		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
-		$rsData = mysqli_query($conn, $strSQL);
-
-		if(!$rsData){
-			die("Query Failed: " . $conn->connect_error());
-		}
-		/*for($j=$yStart; $j<=$yEnd; $j++)
+		if ($oCrop[$i]->Used == "true")
 		{
-			if (!$rsData->EOF && $rsData->fields($j)!=NULL )
-			{
-				$oCrop[$i]->Yield[$j-$yStart] = $rsData->fields($j);
+			$strSQL = "SELECT * FROM tblCountyYields WHERE FIPS='".iif( $oCrop[$i]->Label != 'dairy', $_POST['fips'], substr($_POST['fips'],0,2).'000')."' AND CommCode=".$oCrop[$i]->CommCode;
+			//This is the old code ($rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;)
+		
+			$rsData = mysqli_query($info_db, $strSQL);
+			//Checking if the query is true or false
+			if(!$rsData){
+				die("Query Failed: " . $info_db->connect_error());
 			}
-		}*/
+			/*for($j=$yStart; $j<=$yEnd; $j++)
+			{
+				if (!$rsData->EOF && $rsData->fields($j)!=NULL )
+				{
+					$oCrop[$i]->Yield[$j-$yStart] = $rsData->fields($j);
+				}
+			}*/
 		
 		if (mysqli_num_rows($rsData) > 0)
 		{
@@ -70,10 +76,10 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 	{
 		$strSQL = "SELECT * FROM tblStatePrices WHERE StFips='".substr($_POST["fips"],0,2)."' AND CommCode=".$oCrop[$i]->CommCode;
 		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );;
-		$rsData = mysqli_query($conn, $strSQL);
+		$rsData = $info_db->query($strSQL);
 
 		if(!$rsData){
-			die("Query Failed: " . $conn->connect_error());
+			die("Query Failed: " . $info_db->connect_error());
 		}
 		if (mysqli_num_rows($rsData) > 0){
 				
@@ -93,39 +99,39 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 }
 
 //Forecasted Prices********************************************************************************************************************
-for($i=0;$i<=count($oCrop)-1;$i++)
-{
-	if ($oCrop[$i]->Used == "true")
-	{
-		if ($oCrop[$i]->Label != "dairy")
-		{
+for($i=0;$i<=count($oCrop)-1;$i++){
+	if ($oCrop[$i]->Used == "true"){
+		if ($oCrop[$i]->Label != "dairy"){
 			$strSQL = "SELECT * FROM tblNationalPrices WHERE CommCode=".$oCrop[$i]->CommCode;
 		}
-		else
+		else{
 			$strSQL = "SELECT * FROM tblStatePrices WHERE StFips='".substr($_POST["fips"],0,2)."' AND CommCode=".$oCrop[$i]->CommCode;
+		}
 		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
-		$rsData = mysqli_query($conn, $strSQL);
-
+		$rsData = $info_db->query($strSQL);
 		if(!$rsData){
-			die("Query Failed: " . $conn->connect_error());
+			die("Query Failed: " . $info_db->connect_error());
 		}
 		if (mysqli_num_rows($rsData) > 0){
 				
-			$row = mysqli_fetch_assoc($rsData);
+			$row = $rsData->fetch_assoc();
+			//var_dump($row);
 
-		for($j=$yStart-3; $j<=$yEnd; $j++)
-		{
+		}
+
+		for($j=$yStart-3; $j<=$yEnd; $j++){
 			//if (!$rsData->EOF && $rsData->fields($j)!=NULL )
-			if ($row[$yStart] != NULL){
-			
+			if ($row[$yStart] != NULL){	
+				print_r($oCrop[$i]->Price[0]);
 				$oCrop[$i]->Price[$j-$yStart+3] = $rsData->fields($j);
 			}
 		}
 		//$rsData->close();
-		mysqli_close($conn);
+		//mysqli_close($conn);
 		}
 	}
-}
+
+
 //Other Revenues********************************************************************************************************************
 for($i=0;$i<=count($oCrop)-1;$i++)
 {
@@ -139,10 +145,10 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 			$strSQL .= "WHERE b.Fips='".$_POST['fips']."' ";
 			$strSQL .= "AND a.CommCode=".$oCrop[$i]->CommCode;
 			//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
-			$rsData = mysqli_query($conn, $strSQL);
+			$rsData = mysqli_query($info_db, $strSQL);
 
 			if(!$rsData){
-				die("Query Failed: " . $conn->connect_error());
+				die("Query Failed: " . $info_db->connect_error());
 			}
 			$Region = $rsData->fields('Region');
 			if (!$Region)
@@ -154,10 +160,10 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		//Regional Other Revenue
 		$strSQL = "SELECT * FROM tblOtherRev WHERE Region=".$Region." AND CommCode=".$oCrop[$i]->CommCode;
 		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
-		$rsData = mysqli_query($conn, $strSQL);
+		$rsData = mysqli_query($info_db, $strSQL);
 
 		if(!$rsData){
-			die("Query Failed: " . $conn->connect_error());
+			die("Query Failed: " . $info_db->connect_error());
 		}
 		for ($j=$yStart; $j<=$yEnd;$j++)
 		{
@@ -183,8 +189,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$strSQL = "SELECT * FROM tblRegions AS a INNER JOIN tblRegionVarCosts AS b ON a.Region=b.Region ";
 		$strSQL .= "WHERE a.Fips='".$_POST['fips']."' ";
 		$strSQL .= "AND b.CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
-
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		if (!$rsData->FetchRow()) //If FetchRow doesn't return a row, then we know Region is zero
 		{
 			$Region = 0;
@@ -196,7 +205,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		//Regional Costs
 		$strSQL_repeat = "SELECT * FROM tblRegionVarCosts AS a ";
 		$strSQL_repeat .="WHERE a.Region=".$Region." AND a.CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL_repeat);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		//Regional Yields
 		$strSQL = "SELECT tblRegions.Region, tblCountyYields.CommCode"; //These are the weighted regional yields
 		for ($k=$yStart-12;$k<=$yStart-3;$k++)
@@ -207,7 +220,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$strSQL .= "(tblCountyHarvested.CommCode = tblCountyYields.CommCode) ";
 		$strSQL .= "WHERE ((tblCountyYields.CommCode)=".$oCrop[$i]->CommCode.")".iif($Region!=0, " AND ((tblRegions.Region)=".$Region.")", "");
 		$strSQL .= " GROUP BY tblRegions.Region, tblCountyYields.CommCode";
-		$rsRgYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsRgYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsRgYield = $info_db->query($strSQL);
+		if(!$rsRgYield){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		$AvgRgYield = 1;
 		if (!$rsRgYield->EOF) //If not end of file, make sure there is a regional yield
 		{
@@ -221,7 +238,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		}
 		//County Yields
 		$strSQL = "SELECT tblCountyYields.* FROM tblCountyYields WHERE Fips='".$_POST['fips']."' AND CommCode=".$oCrop[$i]->CommCode;
-		$rsCoYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsCoYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsCoYield = $info_db->query($strSQL);
+		if(!$rsCoYield){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		$AvgCoYield = 1;
 		for($k=$yStart-12; $k<=$yStart-3; $k++)
 		{
@@ -256,7 +277,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 			$rsData->MoveNext();
 		} while(!$rsData->EOF);
 		//Loop back to beginning of FetchRow
-		$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL_repeat);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 
 		if (!$rsData->FetchRow()) //If there are no variable costs, then create blank category
 		{
@@ -278,7 +303,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$strSQL = "SELECT * FROM tblRegions AS a INNER JOIN tblRegionFixedCosts AS b ON a.Region=b.Region ";
 		$strSQL .= "WHERE a.Fips='".$_POST['fips']."' ";
 		$strSQL .= "AND b.CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		if (!$rsData->FetchRow()) //If FetchRow doesn't return a row, then we know Region is zero
 		{
 			$Region = 0;
@@ -290,7 +319,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		//Regional Costs
 		$strSQL_repeat = "SELECT * FROM tblRegionFixedCosts AS a ";
 		$strSQL_repeat .="WHERE a.Region=".$Region." AND a.CommCode=".$oCrop[$i]->CommCode;
-		$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsData = $db->Execute($strSQL_repeat) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL_repeat);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		//Regional Yields
 		$strSQL = "SELECT tblRegions.Region, tblCountyYields.CommCode"; //These are the weighted regional yields
 		for ($k=$yStart-12;$k<=$yStart-3;$k++)
@@ -301,7 +334,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$strSQL .= "(tblCountyHarvested.CommCode = tblCountyYields.CommCode) ";
 		$strSQL .= "WHERE ((tblCountyYields.CommCode)=".$oCrop[$i]->CommCode.")".iif($Region!=0, " AND ((tblRegions.Region)=".$Region.")", "");
 		$strSQL .= "GROUP BY tblRegions.Region, tblCountyYields.CommCode";
-		$rsRgYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsRgYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsData = $info_db->query($strSQL_repeat);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		$AvgRgYield = 1;
 		if (!$rsRgYield->EOF ) //If not end of file, make sure there is a regional yield
 		{
@@ -316,7 +353,11 @@ for($i=0;$i<=count($oCrop)-1;$i++)
 		$rsRgYield->Close();
 		//County Yields
 		$strSQL = "SELECT tblCountyYields.* FROM tblCountyYields WHERE Fips='".$_POST['fips']."' AND CommCode=".$oCrop[$i]->CommCode;
-		$rsCoYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		//$rsCoYield = $db->Execute($strSQL) or die('<br/><font color="red">Query Error on: <b>'.__FILE__.' Line: '.__LINE__.' </b><br/>'.$db->ErrorMsg() );
+		$rsCoYield = $info_db->query($strSQL);
+		if(!$rsData){
+			die("Query Failed: " . $info_db->connect_error());
+		}
 		$AvgCoYield = 1;
 		for($k=$yStart-12; $k<=$yStart-3; $k++)
 		{
